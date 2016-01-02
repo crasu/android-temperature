@@ -22,7 +22,7 @@ public class TemperatureSaveTask extends AsyncTask<Integer, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Integer... integers) {
-        return TemperatureSaver.saveTemperature(integers[0]);
+        return TemperatureSaveService.saveTemperature(integers[0]);
     }
 
     @Override

@@ -7,3 +7,6 @@ threadsafe: true
 handlers:
 - url: /temperature
   script: temperature.application
+- url: /
+  static_files: index.html
+  upload: index.html

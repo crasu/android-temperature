@@ -3,12 +3,15 @@ package de.crasu.AndroidTemperature;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,9 +19,33 @@ import android.widget.TextView;
 
 public class TemperatureActivity extends Activity
 {
-    public static final int DELAY = 3600*1000;
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
+    private ProgressDialog progressDialog;
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            TextView mainTextView = (TextView) findViewById(R.id.mainTextView);
+
+            Integer type = intent.getIntExtra("type", TemperatureSaveService.SAVE_STOP);
+
+            if(type == TemperatureSaveService.SAVE_START) {
+                mainTextView.append("Speichern gestartet\n");
+                progressDialog = ProgressDialog.show(getActivity(), "", "Daten werden übertragen", true);
+            } else {
+                Boolean result = intent.getBooleanExtra("result", false);
+                Integer temperature = intent.getIntExtra("temperature", -100);
+                CharSequence text = mainTextView.getText();
+                mainTextView.setText(text.subSequence(Math.max(text.length() - 150, 0), text.length()));
+                mainTextView.append(String.format("Aktuelle Temperatur: %d\n", temperature, result ? "" : " Fehler beim Speichern"));
+                progressDialog.dismiss();
+
+                Log.i("AndroidTemperature", String.format("saved temperature is %d", temperature));
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -35,6 +62,9 @@ public class TemperatureActivity extends Activity
             }
         });
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter(TemperatureSaveService.class.getName()));
+
         alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
         alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
@@ -50,6 +80,8 @@ public class TemperatureActivity extends Activity
         if (alarmMgr!= null) {
             alarmMgr.cancel(alarmIntent);
         }
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
     }
 
@@ -61,13 +93,7 @@ public class TemperatureActivity extends Activity
     }
 
     private void updateView(Integer temperature) {
-        TextView mainTextView = (TextView) findViewById(R.id.mainTextView);
 
-        CharSequence text = mainTextView.getText();
-        mainTextView.setText(text.subSequence(Math.max(text.length() - 150, 0), text.length()));
-        mainTextView.append("Aktuelle Temperatur: " + temperature + "\n");
-
-        Log.i("AndroidTemperature", "saved temperature is " + temperature);
     }
 
     protected TemperatureActivity getActivity() {
