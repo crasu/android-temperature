@@ -9,6 +9,9 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.BATTERY_STATS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+
     <application android:label="@string/app_name" android:icon="@mipmap/launcher">
         <activity android:name=".TemperatureActivity"
                   android:label="@string/app_name">
@@ -17,5 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".WakefulReceiver"></receiver>
+        <service android:name=".TemperatureSaveService"></service>
     </application>
 </manifest>

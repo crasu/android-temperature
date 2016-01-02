@@ -1,6 +1,9 @@
 package de.crasu.AndroidTemperature;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
@@ -14,7 +17,8 @@ import android.widget.TextView;
 public class TemperatureActivity extends Activity
 {
     public static final int DELAY = 3600*1000;
-    private Handler timerHandler;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -27,20 +31,26 @@ public class TemperatureActivity extends Activity
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAndUpdate();
+                getActivity().startService(new Intent(getApplicationContext(), TemperatureSaveService.class));
             }
         });
 
-        timerHandler = new Handler();
-        timerHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                saveAndUpdate();
-                timerHandler.postDelayed(this, DELAY);
-            }
-        }, DELAY);
+        alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
-        saveAndUpdate();
+        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
+                new Intent(getApplicationContext(), WakefulReceiver.class), 0);
+
+        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES, alarmIntent);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (alarmMgr!= null) {
+            alarmMgr.cancel(alarmIntent);
+        }
+        super.onDestroy();
     }
 
     private void saveAndUpdate() {

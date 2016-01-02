@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 
 public class TemperatureSaveTask extends AsyncTask<Integer, Void, Boolean> {
-    private final TemperatureSaver temperatureSaver = new TemperatureSaver();
     Context context;
     private final ProgressDialog progressDialog;
 
@@ -23,7 +22,7 @@ public class TemperatureSaveTask extends AsyncTask<Integer, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Integer... integers) {
-        return temperatureSaver.saveTemperature(integers[0]);
+        return TemperatureSaver.saveTemperature(integers[0]);
     }
 
     @Override

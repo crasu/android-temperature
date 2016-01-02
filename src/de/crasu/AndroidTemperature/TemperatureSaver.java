@@ -1,5 +1,8 @@
 package de.crasu.AndroidTemperature;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -16,7 +19,7 @@ public class TemperatureSaver {
     public TemperatureSaver() {
     }
 
-    public Boolean saveTemperature(Integer temperature) {
+    public static Boolean saveTemperature(Integer temperature) {
         try {
             HttpClient client = new DefaultHttpClient();
             HttpPost request = new HttpPost("http://android-temperature.appspot.com/temperature");
