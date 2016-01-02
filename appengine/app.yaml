@@ -1,0 +1,9 @@
+application: android-temperature
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /temperature
+  script: temperature.application
