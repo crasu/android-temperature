@@ -13,8 +13,9 @@ class MainPage(webapp2.RequestHandler):
     def post(self):
         self.response.headers['Content-Type'] = 'text/plain'
         temperature = self.request.get("temperature")
+        id = self.request.get("id")
         logging.info("Received temperature from client: " + temperature)
-        saveTemperature(temperature)
+        save(temperature, id)
 
 
 def getTemperatures():
@@ -25,15 +26,18 @@ def getTemperatures():
             l.append(d)
     return l
 
-def saveTemperature(temperature):
+def save(temperature, id):
     t = Temperature()
     t.temperature = int(temperature)
     t.time = int(time.time())
+    t.id = id
     t.put()
+
 
 class Temperature(db.Model):
     temperature = db.IntegerProperty()
     time = db.IntegerProperty()
+    id = db.StringProperty()
 
 
 application = webapp2.WSGIApplication([('/temperature', MainPage)], debug=True)

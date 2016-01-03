@@ -1,9 +1,12 @@
 package de.crasu.AndroidTemperature;
 
 import android.app.IntentService;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import org.apache.http.HttpResponse;
@@ -59,12 +62,17 @@ public class TemperatureSaveService  extends IntentService {
         return batteryIntent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -100);
     }
 
-    public static Boolean saveTemperature(Integer temperature) {
+    public Boolean saveTemperature(Integer temperature) {
         try {
             HttpClient client = new DefaultHttpClient();
             HttpPost request = new HttpPost("http://android-temperature.appspot.com/temperature");
+
+            String android_id = Settings.Secure.getString(this.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+
             List<NameValuePair> nvps = new ArrayList<NameValuePair>();
             nvps.add(new BasicNameValuePair("temperature", temperature.toString()));
+            nvps.add(new BasicNameValuePair("id", android_id));
             request.setEntity(new UrlEncodedFormEntity(nvps));
             HttpResponse response = client.execute(request);
 

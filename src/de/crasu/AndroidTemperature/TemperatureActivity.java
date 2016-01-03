@@ -85,23 +85,7 @@ public class TemperatureActivity extends Activity
         super.onDestroy();
     }
 
-    private void saveAndUpdate() {
-        Integer temperature = getBatteryTemperature();
-
-        new TemperatureSaveTask(getApplicationContext(), getActivity()).execute(temperature);
-        updateView(temperature);
-    }
-
-    private void updateView(Integer temperature) {
-
-    }
-
     protected TemperatureActivity getActivity() {
         return TemperatureActivity.this;
-    }
-
-    private Integer getBatteryTemperature() {
-        Intent batteryIntent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        return batteryIntent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -100);
     }
 }
