@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Created by christian on 02.01.16.
  */
-public class TemperatureSaveService  extends IntentService {
+public class TemperatureSaveService extends IntentService {
     public static final int SAVE_START = 0;
     public static final int SAVE_STOP = 1;
 

@@ -21,7 +21,7 @@ class MainPage(webapp2.RequestHandler):
 def getTemperatures():
     l = []
     temperatures = db.GqlQuery("SELECT * FROM Temperature ORDER BY time DESC")
-    for temperature in temperatures[0:30]:
+    for temperature in temperatures[0:100]:
             d = {"time": temperature.time, "temperature": temperature.temperature}
             l.append(d)
     return l
